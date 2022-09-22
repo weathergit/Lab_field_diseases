@@ -1,3 +1,2 @@
 # Lab_field_diseases
-comparsion of lab, mix, field : code&amp; fig
-!!!some data are mis-used and need to check. 
+之前数据错了（mix的使用了在苹果），在修正数据，
