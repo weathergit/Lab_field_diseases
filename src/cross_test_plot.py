@@ -46,12 +46,12 @@ def main(lab, mixed, field):
     legends = [bar([0], [0], color=colors['field'], label='Test on Field'),
                bar([0], [0], color=colors['mixed'], label='Test on Mixed'),
                bar([0], [0], color=colors['lab'], label='Test on Lab')]
-    axs[0].legend(handles=legends, loc=0, frameon=False)
+    axs[2].legend(handles=legends, loc=0, frameon=False, fontsize=16)
 
     plt.yticks(fontsize=14)
     # plt.xlim(-0.2, 3.4)
     plt.tight_layout()
-    plt.savefig('../fig/cross_test_row.tiff', dpi=300)
+    plt.savefig('../fig/cross_test_row.png', dpi=300)
     plt.show()
 
 
