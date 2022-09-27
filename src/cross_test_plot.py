@@ -13,9 +13,9 @@ def main(lab, mixed, field):
 
     fig, axs = plt.subplots(nrows=1, ncols=3, sharex=True, figsize=(15, 5), facecolor='w')
     # lab on min field
-    axs[0].bar(x=np.arange(3) - 0.1, height=lab['acc'].values[0::2], width=0.2, color=colors['field'],
+    b1 = axs[0].bar(x=np.arange(3) - 0.1, height=lab['acc'].values[0::2], width=0.2, color=colors['field'],
                label='Test on Field')
-    axs[0].bar(x=np.arange(3) + 0.1, height=lab['acc'].values[1::2], width=0.2, color=colors['mixed'],
+    b2 = axs[0].bar(x=np.arange(3) + 0.1, height=lab['acc'].values[1::2], width=0.2, color=colors['mixed'],
                label='Test on Mixed')
     axs[0].set_ylim(0, 1)
     axs[0].set_ylabel('Train on Lab', fontsize=20)
@@ -23,18 +23,18 @@ def main(lab, mixed, field):
     axs[0].set_xticks(np.arange(3), labels=models_labels, fontsize=15)
 
     # Mixed on lab field
-    axs[1].bar(x=np.arange(3) - 0.1, height=mixed['acc'].values[0::2], width=0.2, color=colors['field'],
+    b3 = axs[1].bar(x=np.arange(3) - 0.1, height=mixed['acc'].values[0::2], width=0.2, color=colors['field'],
                label='Test on Field')
-    axs[1].bar(x=np.arange(3) + 0.1, height=mixed['acc'].values[1::2], width=0.2, color=colors['lab'],
+    b4 = axs[1].bar(x=np.arange(3) + 0.1, height=mixed['acc'].values[1::2], width=0.2, color=colors['lab'],
                label='Test on Lab')
     axs[1].set_ylim(0, 1)
     axs[1].set_ylabel('Train on Mixed', fontsize=20)
     # axs[1].legend(loc=9, ncol=2, frameon=False, fontsize=14)
     axs[1].set_xticks(np.arange(3), labels=models_labels, fontsize=15)
     # Field on mixed lab
-    axs[2].bar(x=np.arange(3) - 0.1, height=field['acc'].values[0::2], width=0.2, color=colors['lab'], label='Test on '
+    b5 = axs[2].bar(x=np.arange(3) - 0.1, height=field['acc'].values[0::2], width=0.2, color=colors['lab'], label='Test on '
                                                                                                              'Lab')
-    axs[2].bar(x=np.arange(3) + 0.1, height=field['acc'].values[1::2], width=0.2, color=colors['mixed'], label='Test '
+    b6 = axs[2].bar(x=np.arange(3) + 0.1, height=field['acc'].values[1::2], width=0.2, color=colors['mixed'], label='Test '
                                                                                                                'on '
                                                                                                                'Mixed')
     axs[2].set_ylim(0, 1)
@@ -48,10 +48,20 @@ def main(lab, mixed, field):
                bar([0], [0], color=colors['lab'], label='Test on Lab')]
     axs[2].legend(handles=legends, loc=0, frameon=False, fontsize=16)
 
+    axs[0].bar_label(b1, label_type='edge', fmt="%.2f", fontsize=12)
+    axs[0].bar_label(b2, label_type='edge', fmt="%.2f", fontsize=12)
+    axs[1].bar_label(b3, label_type='edge', fmt="%.2f", fontsize=12)
+    axs[1].annotate('0.98', xy=(0.2, 0.9), fontsize=12)
+    axs[1].annotate('0.98', xy=(1.2, 0.9), fontsize=12)
+    axs[1].annotate('0.99', xy=(1.8, 0.9), fontsize=12)
+    axs[2].bar_label(b5, label_type='edge', fmt="%.2f", fontsize=12)
+    axs[2].bar_label(b6, label_type='edge', fmt="%.2f", fontsize=12)
+
     plt.yticks(fontsize=14)
     # plt.xlim(-0.2, 3.4)
     plt.tight_layout()
     plt.savefig('../fig/cross_test_row.png', dpi=300)
+    plt.savefig('../fig/cross_test_row.tiff', dpi=300)
     plt.show()
 
 
