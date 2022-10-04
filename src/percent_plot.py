@@ -26,12 +26,18 @@ sns.set_palette(sns.color_palette(colors))
 
 def main():
     df = pd.read_csv('../data/part_val_test_acc.csv')
-    sns.lineplot(x=df['percent'], y=df['val acc'], hue='models', linewidth=2,
-                 marker='*', ms=12, data=df)
-    sns.lineplot(x=df['percent'], y=df['test acc'], hue='models', linewidth=1.5,
-                 marker='o', ms=6, legend=None, alpha=0.7, data=df)
-    # plt.ylim(0.75, 0.9)
-    plt.legend(labels=['EfficientNet B0', 'MobileNet V3s', 'ResNet 34'], frameon=False, fontsize=12)
+    p1 = sns.lineplot(x='percent', y='val acc', hue='models', data=df, marker='*', lw=2, ms=12, legend=True)
+    sns.lineplot(x='percent', y='test acc', hue='models', data=df, marker='o', lw=1.5, ms=6, alpha=0.7, legend=False)
+    handles, _ = p1.get_legend_handles_labels()
+    l1 = plt.legend(handles=handles, labels=['EfficientNet B0', 'MobileNet V3s', 'ResNet 34'], frameon=False,
+                    fontsize=12, bbox_to_anchor=[0.55, 0.5])
+    custom_scatter = [plt.scatter(0, 0, marker='*', label='Validation Accuracy', color='k'),
+                      plt.scatter(0, 0, marker='o', label='Test Accuracy', color='k')]
+    l2 = plt.legend(handles=custom_scatter, fontsize=12, frameon=False,bbox_to_anchor=[0.55, 0.3])
+
+    p1.add_artist(l1)
+    p1.add_artist(l2)
+
     plt.xticks(ticks=np.arange(1, 11, 1), labels=['{}%'.format(i) for i in range(10, 110, 10)], fontsize=12)
     plt.xlabel(None)
     plt.ylabel(None)
