@@ -1,2 +1,8 @@
-# Lab_field_diseases
-update fig/src
+## light weight CNN model  in plant diseases diagnosis: from lab to field 
+
+- data
+- fig
+- src
+
+
+
