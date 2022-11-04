@@ -55,6 +55,6 @@ def load_datasets(datasets_folder, data_transforms, batchsize):
 
 
 if __name__ == "__main__":
-    datasets_folder = './field/'
+    datasets_folder = '../data/field/'
     data_transforms = data_transforms()
     dataset_sizes, dataloaders = load_datasets(datasets_folder, data_transforms)

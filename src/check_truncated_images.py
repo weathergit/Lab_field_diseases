@@ -22,20 +22,20 @@ def find_truncted(folder):
     return trunc_list
 
 
-def mvfile(imglist):
+def mv_file(imglist):
     for img in imglist:
         os.remove(img)
 
 
 if __name__ == "__main__":
-    field_folder = './field/'
-    lab_folder = './lab/'
-    mixed_folder = './mixed/'
+    field_folder = '../data/field/'
+    lab_folder = '../data/lab/'
+    mixed_folder = '../data/mixed/'
     imglist = find_truncted(field_folder)
     imglist = find_truncted(mixed_folder)
     imglist = find_truncted(lab_folder)
     print(imglist)
-    # mvfile(imglist)
+    # mv_file(imglist)
     # find_truncted(lab_folder)
     ## noting that the truncted file also exits in mixed folders
     # os.remove('./field/valid/Potato_early_blight/1_2 (24).jpg')

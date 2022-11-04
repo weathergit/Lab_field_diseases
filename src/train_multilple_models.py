@@ -11,8 +11,8 @@ def run_command():
     train lab, field, mixed on total datasets.
     :return:
     """
-    train_folders = ['./field/', './lab/', './mixed/']
-    out_folders = ['./field/output/', './lab/output/', './mixed/output/']
+    train_folders = ['../data/field/', '../data/lab/', '../data/mixed/']
+    out_folders = ['../data/field/output/', '../data/lab/output/', '../data/mixed/output/']
     models_names = ['effi0', 'mobilev3', 'res34']
     for fld, out in zip(train_folders, out_folders):
         for name in models_names:
@@ -56,5 +56,4 @@ def run_command3():
 
 
 if __name__ == "__main__":
-    run_command2(train_folders='./plant_individual/lab/')
-    run_command2(train_folders='./plant_individual/mixed/')
+    run_command()

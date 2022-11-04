@@ -57,5 +57,6 @@ def partial_model_on_field():
 
 if __name__ == "__main__":
     # partial_model_on_field()
-    evaluate1(root_dir='./plant_individual/lab/')
-    evaluate1(root_dir='./plant_individual/mixed/')
+    # evaluate1(root_dir='./plant_individual/lab/')
+    # evaluate1(root_dir='./plant_individual/mixed/')
+    evaluate1()

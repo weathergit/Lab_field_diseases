@@ -34,8 +34,8 @@ def data_statistics_bar_plot():
         res = pd.merge(field_df, lab_df)
         return res
 
-    field_folder = '../original_datasets/merged_datasets/field/'
-    lab_folder = '../original_datasets/merged_datasets/lab/'
+    field_folder = '../data/original_datasets/merged_datasets/field/'
+    lab_folder = '../data/original_datasets/merged_datasets/lab/'
     res = field_lab_df(field_folder, lab_folder)
     res = res.sort_values(by='diseases')
     ax = res.plot(kind='bar', stacked=True,
@@ -50,12 +50,12 @@ def data_statistics_bar_plot():
     plt.xlabel('Diseases name', fontsize=12)
     plt.ylabel('Image number', fontsize=12)
     plt.tight_layout()
-    plt.savefig('../figs/original_data_statistics.bar.png', dpi=300)
+    plt.savefig('../fig/original_data_statistics.bar.png', dpi=300)
     plt.show()
 
 
 def train_acc_loss_plot():
-    folders = ['./lab/', './field/', './mixed/']
+    folders = ['../data/lab/', '../data/field/', '../data/mixed/']
     csv_files = []
     for fld in folders:
         cf = sorted(glob.glob(fld + 'output/*loss*csv'))
@@ -97,12 +97,12 @@ def train_acc_loss_plot():
     axs[8].set_xlabel('ResNet 34', fontsize=16)
 
     plt.tight_layout()
-    plt.savefig('../figs/train_acc_loss.png', dpi=300)
+    plt.savefig('../fig/train_acc_loss.png', dpi=300)
     plt.show()
 
 
 def cross_test_plot():
-    predict_path = sorted(glob.glob('./cross_tested/*csv'))
+    predict_path = sorted(glob.glob('../data/cross_tested/*csv'))
     models = [path.split('/')[-1].split('_')[0] for path in predict_path]
     sources = [path.split('/')[-1].split('_')[1] for path in predict_path]
     targets = [path.split('/')[-1].split('_')[2][:-4] for path in predict_path]
@@ -174,18 +174,18 @@ def cross_test_plot():
 
     plt.yticks(fontsize=14)
     plt.tight_layout()
-    plt.savefig('../figs/cross_test_row.png', dpi=300)
+    plt.savefig('../fig/cross_test_row.png', dpi=300)
     # plt.savefig('../fig/cross_test_row.tiff', dpi=300)
     plt.show()
 
 
 def get_partial_data2frame():
-    train_val_fns = sorted(glob.glob('./partial/*/output/*acc*csv'))
+    train_val_fns = sorted(glob.glob('../data/partial/*/output/*acc*csv'))
     val_accs = []
     for fn in train_val_fns:
         df = pd.read_csv(fn, index_col=0)
         val_accs.append(df.val_acc.max())
-    test_fns = sorted(glob.glob('./partial/*/output/*predict*.csv'))
+    test_fns = sorted(glob.glob('../data/partial/*/output/*predict*.csv'))
     test_acc = []
     for fn in test_fns:
         df = pd.read_csv(fn, index_col=0)
@@ -198,7 +198,7 @@ def get_partial_data2frame():
     a = a.repeat(3, axis=1).flatten().tolist()
     df = pd.DataFrame.from_dict({'percent': a, 'models': models, 'val acc': val_accs, 'test acc': test_acc})
 
-    field_csvs = sorted(glob.glob('./part_test_on_field/*/*csv'))
+    field_csvs = sorted(glob.glob('../data/part_test_on_field/*/*csv'))
     field_acc = []
     for fn in field_csvs:
         df = pd.read_csv(fn, index_col=0)
@@ -320,10 +320,41 @@ def diseases_acc_plot():
     plt.show()
 
 
+def precision_recall_f1_plot(cla='precision'):
+    """
+    many data are impposible to make tables
+    :return:
+    """
+    fns = sorted(glob.glob('../data/tables/?????_[!v]*'))
+    dfs = []
+    for fn in fns:
+        model = fn.split('_')[2][:-4]
+        cond = fn.split('_')[1]
+        df = pd.read_csv(fn, index_col=0)
+        df = df.iloc[:-3, :-1]
+        df['conditions'] = cond
+        df['models'] = model
+        dfs.append(df)
+    res = pd.concat(dfs, axis=00)
+
+    colors =['#AE3D3A', '#3382A3', '#304E6C']
+
+    plt.figure(figsize=(6, 6))
+    s =sns.scatterplot(x=res.index, y=res[cla], hue='conditions', style='models', data=res, palette=colors)
+    labels = [name.replace('_', ' ') for name in res.index.unique().tolist()]
+    s.set_xticks(ticks=range(0, 14), labels=labels, rotation=90, fontsize=12)
+    plt.legend(frameon=False, fontsize=12)
+    plt.ylabel(cla.capitalize().replace('-', ' '), fontsize=12)
+    plt.tight_layout()
+    plt.savefig('../fig/total_'+cla+'.png', dpi=300)
+    plt.show()
+
+
 if __name__ == '__main__':
-    data_statistics_bar_plot()
+    # data_statistics_bar_plot()
     # train_acc_loss_plot()
     # cross_test_plot()
     # partial_valid_test_acc_plot()
     # partial_test_on_filed_plot()
     # diseases_acc_plot()
+    precision_recall_f1_plot(cla='f1-score')

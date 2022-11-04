@@ -33,8 +33,8 @@ def recursive_copy(srclist, dstlist):
 
 
 if __name__ == '__main__':
-    field_imglist = getfiles('./original_datasets/aug_split_datasets/field')
-    lab_imglist = getfiles('./original_datasets/aug_split_datasets/lab/')
+    field_imglist = getfiles('../data/original_datasets/aug_split_datasets/field')
+    lab_imglist = getfiles('../data/original_datasets/aug_split_datasets/lab/')
     field_imglist_new = replace_folder(field_imglist, src='field')
     lab_imglist_new = replace_folder(lab_imglist, src='lab')
     recursive_copy(field_imglist, field_imglist_new)

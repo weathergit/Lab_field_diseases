@@ -68,7 +68,7 @@ def do_aug(root_dir):
 
 if __name__ == '__main__':
 
-    image_dir = "./original_datasets/aug_split_datasets/lab/train/"
+    image_dir = "../data/original_datasets/aug_split_datasets/lab/train/"
     show_class_number(image_dir)
     do_aug(image_dir)
     show_class_number(image_dir)

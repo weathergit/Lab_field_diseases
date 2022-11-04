@@ -48,6 +48,6 @@ def bar_plot(field_folder, lab_folder):
 
 if __name__ == '__main__':
 
-    field_folder = './original_datasets/merged_datasets/field/'
-    lab_folder = './original_datasets/merged_datasets/lab/'
+    field_folder = '../data/original_datasets/merged_datasets/field/'
+    lab_folder = '../data/original_datasets/merged_datasets/lab/'
     bar_plot(field_folder, lab_folder)

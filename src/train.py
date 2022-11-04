@@ -151,10 +151,10 @@ def main(args):
         raise NotImplemented
 
     if args.optim == 'sgd':
-        optimizer_ft = optim.SGD(model.parameters(), lr=args.lr, momentum=0.9)
+        optimizer_ft = optim.SGD(model.parameters(), lr=args.lr, momentum=0.9, weight_decay=1e-5)
         exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=5, gamma=0.1)
     elif args.optim == 'adam':
-        optimizer_ft = optim.adam.Adam(model.parameters(), lr=args.lr)
+        optimizer_ft = optim.adam.Adam(model.parameters(), lr=args.lr,weight_decay=1e-5)
         exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=5, gamma=0.1)
     else:
         raise NotImplemented
@@ -165,3 +165,10 @@ def main(args):
 if __name__ == "__main__":
     args = arg_parser()
     main(args)
+    # from torchvision.models import resnet18
+    # optimizer_ft = optim.SGD(resnet18(pretrained=False).parameters(), lr=0.001, momentum=0.9)
+    # lrs = lr_scheduler.StepLR(optimizer_ft, step_size=5, gamma=0.1)
+    # for i in range(20):
+    #     optimizer_ft.step()
+    #     lrs.step()
+    #     print(lrs.get_last_lr())
