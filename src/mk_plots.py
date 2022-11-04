@@ -320,7 +320,7 @@ def diseases_acc_plot():
     plt.show()
 
 
-def precision_recall_f1_plot(cla='precision'):
+def precision_recall_f1_plot():
     """
     many data are impposible to make tables
     :return:
@@ -338,15 +338,19 @@ def precision_recall_f1_plot(cla='precision'):
     res = pd.concat(dfs, axis=00)
 
     colors =['#AE3D3A', '#3382A3', '#304E6C']
+    fig, axs = plt.subplots(nrows=3, ncols=1, sharex=True, figsize=(6, 12))
 
-    plt.figure(figsize=(6, 6))
-    s =sns.scatterplot(x=res.index, y=res[cla], hue='conditions', style='models', data=res, palette=colors)
-    labels = [name.replace('_', ' ') for name in res.index.unique().tolist()]
-    s.set_xticks(ticks=range(0, 14), labels=labels, rotation=90, fontsize=12)
-    plt.legend(frameon=False, fontsize=12)
-    plt.ylabel(cla.capitalize().replace('-', ' '), fontsize=12)
+    for i, cla in enumerate(['precision', 'recall', 'f1-score']):
+        legend = False
+        if i == 0:
+            legend = True
+        s = sns.scatterplot(x=res.index, y=res[cla], hue='conditions', style='models', data=res, palette=colors, ax=axs[i], legend=legend)
+        labels = [name.replace('_', ' ') for name in res.index.unique().tolist()]
+        s.set_xticks(ticks=range(0, 14), labels=labels, rotation=90, fontsize=12)
+        s.set_ylabel(cla.capitalize().replace('-', ' '), fontsize=12)
+        s.legend(ncol=2, frameon=False, fontsize=10, bbox_to_anchor=[0.45, 0.35])
     plt.tight_layout()
-    plt.savefig('../fig/total_'+cla+'.png', dpi=300)
+    plt.savefig('../fig/total_prf.png', dpi=300)
     plt.show()
 
 
@@ -357,4 +361,4 @@ if __name__ == '__main__':
     # partial_valid_test_acc_plot()
     # partial_test_on_filed_plot()
     # diseases_acc_plot()
-    precision_recall_f1_plot(cla='f1-score')
+    precision_recall_f1_plot()
