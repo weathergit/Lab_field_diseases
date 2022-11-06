@@ -9,9 +9,10 @@ import pandas as pd
 import glob
 import os
 import numpy as np
+import random
 from sklearn.metrics import accuracy_score
-from pprint import pprint
 from sklearn.metrics import confusion_matrix
+from PIL import Image
 plt.rcParams['font.family']= 'Times New Roman'
 
 
@@ -338,7 +339,7 @@ def precision_recall_f1_plot():
     res = pd.concat(dfs, axis=00)
 
     colors =['#AE3D3A', '#3382A3', '#304E6C']
-    fig, axs = plt.subplots(nrows=3, ncols=1, sharex=True, figsize=(6, 12))
+    fig, axs = plt.subplots(nrows=3, ncols=1, sharex=True, figsize=(6, 14))
 
     for i, cla in enumerate(['precision', 'recall', 'f1-score']):
         legend = False
@@ -346,11 +347,54 @@ def precision_recall_f1_plot():
             legend = True
         s = sns.scatterplot(x=res.index, y=res[cla], hue='conditions', style='models', data=res, palette=colors, ax=axs[i], legend=legend)
         labels = [name.replace('_', ' ') for name in res.index.unique().tolist()]
-        s.set_xticks(ticks=range(0, 14), labels=labels, rotation=90, fontsize=12)
-        s.set_ylabel(cla.capitalize().replace('-', ' '), fontsize=12)
-        s.legend(ncol=2, frameon=False, fontsize=10, bbox_to_anchor=[0.45, 0.35])
+        s.set_xticks(ticks=range(0, 14), labels=labels, rotation=90, fontsize=14)
+        s.set_ylabel(cla.capitalize().replace('-', ' '), fontsize=14)
+        s.legend(ncol=2, frameon=False, fontsize=10, bbox_to_anchor=[0.5, 0.35])
     plt.tight_layout()
     plt.savefig('../fig/total_prf.png', dpi=300)
+    plt.show()
+
+
+def cam_plot():
+    origin = sorted(glob.glob('../data/cam_maps/origin_test/*/*'))
+    model_folders = sorted(glob.glob('../data/cam_maps/[!c]*[!t]'))
+    images_list = {}
+    for fld in model_folders:
+        criterion = os.path.join(fld, '*', '*')
+        images = sorted(glob.glob(criterion))
+        images_list[fld] = images
+
+    # random.seed(46)
+    # random_index = random.choices(range(4450), k=40)
+    select = [4216, 2798, 3813, 810, 98, 265, 256, 307]
+    titles = [key[2:].replace('_', ' on ') for key in images_list.keys()]
+    titles = ['EfficientNet-Field', 'EfficientNet-Lab', 'EfficientNet-Mixed', 'MobileNet-Field', 'MobileNet-Lab',
+              'MobileNet-Mixed', 'ResNet-Field', 'ResNet-Lab', 'ResNet-Mixed']
+
+    fig, axs = plt.subplots(ncols=10, nrows=8, figsize=(20, 16), facecolor='w')
+    for i, idx in enumerate(select):
+        img1_path = origin[idx]
+        img1 = Image.open(img1_path)
+        w, h = img1.size
+        left = (w - 224) / 2
+        top = (h - 224) / 2
+        right = (w + 224) / 2
+        bottom = (h + 224) / 2
+        img_resize = img1.crop((left, top, right, bottom))
+        axs[i, 0].imshow(img_resize)
+        axs[i, 0].axis('off')
+        j = 1
+        for key, values in images_list.items():
+            img2_path = values[idx]
+            img2 = plt.imread(img2_path)
+            axs[i, j].imshow(img2)
+            axs[i, j].axis('off')
+            if i == 0:
+                axs[i, 0].set_title('Origin', fontsize=16)
+                axs[i, j].set_title(titles[j - 1], fontsize=16)
+            j += 1
+    plt.tight_layout()
+    plt.savefig('../fig/cam_plot1.png', dpi=300)
     plt.show()
 
 
@@ -361,4 +405,5 @@ if __name__ == '__main__':
     # partial_valid_test_acc_plot()
     # partial_test_on_filed_plot()
     # diseases_acc_plot()
-    precision_recall_f1_plot()
+    # precision_recall_f1_plot()
+    cam_plot()
