@@ -140,6 +140,7 @@ def cross_test_plot():
                     label='Test on Field')
     b4 = axs[1].bar(x=np.arange(3) + 0.1, height=mixed['acc'].values[1::2], width=0.2, color=colors['lab'],
                     label='Test on Lab')
+    print(mixed['acc'].values[1::2])
     axs[1].set_ylim(0, 1)
     axs[1].set_ylabel('Accuracy', fontsize=14)
     axs[1].set_title('Train on Mixed', fontsize=16)
@@ -164,14 +165,14 @@ def cross_test_plot():
                bar([0], [0], color=colors['lab'], label='Test on Lab')]
     axs[2].legend(handles=legends, loc=0, frameon=False, fontsize=16)
 
-    axs[0].bar_label(b1, label_type='edge', fmt="%.2f", fontsize=12)
-    axs[0].bar_label(b2, label_type='edge', fmt="%.2f", fontsize=12)
-    axs[1].bar_label(b3, label_type='edge', fmt="%.2f", fontsize=12)
-    axs[1].annotate('0.98', xy=(0.2, 0.9), fontsize=12)
-    axs[1].annotate('0.98', xy=(1.2, 0.9), fontsize=12)
-    axs[1].annotate('0.99', xy=(1.8, 0.9), fontsize=12)
-    axs[2].bar_label(b5, label_type='edge', fmt="%.2f", fontsize=12)
-    axs[2].bar_label(b6, label_type='edge', fmt="%.2f", fontsize=12)
+    axs[0].bar_label(b1, label_type='edge', fmt="%.3f", fontsize=12)
+    axs[0].bar_label(b2, label_type='edge', fmt="%.3f", fontsize=12)
+    axs[1].bar_label(b3, label_type='edge', fmt="%.3f", fontsize=12)
+    axs[1].annotate('0.976', xy=(0.2, 0.9), fontsize=12)
+    axs[1].annotate('0.965', xy=(1.2, 0.9), fontsize=12)
+    axs[1].annotate('0.981', xy=(1.8, 0.9), fontsize=12)
+    axs[2].bar_label(b5, label_type='edge', fmt="%.3f", fontsize=12)
+    axs[2].bar_label(b6, label_type='edge', fmt="%.3f", fontsize=12)
 
     plt.yticks(fontsize=14)
     plt.tight_layout()
@@ -339,7 +340,7 @@ def precision_recall_f1_plot():
     res = pd.concat(dfs, axis=00)
 
     colors =['#AE3D3A', '#3382A3', '#304E6C']
-    fig, axs = plt.subplots(nrows=3, ncols=1, sharex=True, figsize=(6, 14))
+    fig, axs = plt.subplots(nrows=3, ncols=1, sharex=True, figsize=(6, 16))
 
     for i, cla in enumerate(['precision', 'recall', 'f1-score']):
         legend = False
@@ -351,7 +352,7 @@ def precision_recall_f1_plot():
         s.set_ylabel(cla.capitalize().replace('-', ' '), fontsize=14)
         s.legend(ncol=2, frameon=False, fontsize=10, bbox_to_anchor=[0.5, 0.35])
     plt.tight_layout()
-    plt.savefig('../fig/total_prf.png', dpi=300)
+    plt.savefig('../fig/total_prf.svg', dpi=600)
     plt.show()
 
 
@@ -371,7 +372,7 @@ def cam_plot():
     titles = ['EfficientNet-Field', 'EfficientNet-Lab', 'EfficientNet-Mixed', 'MobileNet-Field', 'MobileNet-Lab',
               'MobileNet-Mixed', 'ResNet-Field', 'ResNet-Lab', 'ResNet-Mixed']
 
-    fig, axs = plt.subplots(ncols=10, nrows=8, figsize=(20, 16), facecolor='w')
+    fig, axs = plt.subplots(ncols=10, nrows=8, figsize=(14, 12), facecolor='w')
     for i, idx in enumerate(select):
         img1_path = origin[idx]
         img1 = Image.open(img1_path)
@@ -390,11 +391,49 @@ def cam_plot():
             axs[i, j].imshow(img2)
             axs[i, j].axis('off')
             if i == 0:
-                axs[i, 0].set_title('Origin', fontsize=16)
-                axs[i, j].set_title(titles[j - 1], fontsize=16)
+                axs[i, 0].set_title('Origin', fontsize=12)
+                axs[i, j].set_title(titles[j - 1], fontsize=12)
             j += 1
+    plt.subplots_adjust(wspace=0.05, hspace=0.05)
     plt.tight_layout()
-    plt.savefig('../fig/cam_plot1.png', dpi=300)
+    plt.savefig('../fig/cam_plot1.svg', dpi=600)
+    plt.show()
+
+
+def precision_recall_f1score_heatmap(columns):
+    total_df = pd.read_csv('../data/tables/heatmap_total.csv', index_col=0)
+    individual_df = pd.read_csv('../data/tables/heatmap_individual.csv', index_col=0)
+
+    diseases = total_df.diseases.unique().tolist()
+    diseases = [dis.replace('_', ' ') for dis in diseases]
+
+    plt.rcParams['xtick.labelsize'] = 12
+    plt.rcParams['ytick.labelsize'] = 12
+    fig, axs = plt.subplots(nrows=1, ncols=6, sharey=True, figsize=(8, 6), facecolor='w')
+    i = 0
+    for md in ['EfficientNet', 'MobileNetV3', 'ResNet']:
+        tdf = total_df[total_df['model'] == md]
+        ldf = individual_df[individual_df['model'] == md]
+        tdata = tdf[columns].values.reshape(3, -1).T
+        ldata = ldf[columns].values.reshape(3, -1).T
+        p1 = axs[i].imshow(tdata, cmap='coolwarm_r')
+        p2 = axs[i + 1].imshow(ldata, cmap='coolwarm_r')
+        axs[i].set_xticks([0, 1, 2], ['Field', 'Mixed', 'Lab'], rotation=60)
+        axs[i + 1].set_xticks([0, 1, 2], ['Field', 'Mixed', 'Lab'], rotation=60)
+        axs[i].set_yticks(range(0, 14, 1), diseases)
+        axs[i + 1].set_yticks(range(0, 14, 1), diseases)
+        axs[i].set_title('(a)')
+        axs[i + 1].set_title('(b)')
+        i += 2
+
+    plt.tight_layout()
+    fig.text(0.27, 0.15, 'EfficientNet B0', fontsize=12)
+    fig.text(0.46, 0.15, 'MobileNet V3 Small', fontsize=12)
+    fig.text(0.71, 0.15, 'ResNet 34', fontsize=12)
+    cbar = fig.colorbar(p2, ax=axs, shrink=0.6)
+    cbar.ax.set_ylabel(columns.capitalize().replace('-', ' '), fontsize=14, rotation=270, labelpad=15)
+
+    plt.savefig('../fig/heatmap_'+columns+'.png', dpi=300)
     plt.show()
 
 
@@ -406,4 +445,5 @@ if __name__ == '__main__':
     # partial_test_on_filed_plot()
     # diseases_acc_plot()
     # precision_recall_f1_plot()
-    cam_plot()
+    # cam_plot()
+    precision_recall_f1score_heatmap(columns='f1-score')
