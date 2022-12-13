@@ -29,10 +29,9 @@ def set_seed(seed=42):
     torch.backends.cudnn.benchmasrk = False
 
 
-def train_model(model, num_epochs, dataset_sizes, dataloaders, optimizer, criterion, scheduler, outdir):
+def train_model(model, num_epochs, dataset_sizes, dataloaders, optimizer, criterion, scheduler, outdir, model_name):
 
     set_seed()
-    model_name = model._get_name()
     model.to(device)
 
     print(model_name + ' is trainning now')
@@ -129,20 +128,20 @@ def arg_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--input', type=str, help='input folder of images, root dir including each class folder')
     parser.add_argument('-o', '--output', type=str, help='output folder')
-    parser.add_argument('-e', '--epochs', type=int, default=50, help='epochs for training')
+    parser.add_argument('-e', '--epochs', type=int, default=100, help='epochs for training')
     parser.add_argument('-b', '--batchsize', type=int, default=64, help='batch_size of each epoch')
     parser.add_argument('--lr', type=float, default=0.001, help='learning rate')
     parser.add_argument('--loss', type=str, default='cross_entropy', help='loss function, ')
-    parser.add_argument('-m', '--model', type=str, help='CNN models, only use effi0(Efficient Net b0),'
-                                                        ' mobilev3(Mobile Net V3s) and res34(ResNet34)')
+    parser.add_argument('-m', '--model', type=str, help='CNN models, only use effb0(Efficient Net b0),'
+                                                        ' mobile3s(Mobile Net V3s) and res34(ResNet34) etc.')
     parser.add_argument('--optim', type=str, default='sgd',  help='optimizer of weights, use sgd or adam')
     args = parser.parse_args()
     return args
 
 
 def main(args):
-    data_transform = data_transforms()
-    dataset_sizes, dataloaders, class_names = load_datasets(args.input, data_transform, args.batchsize)
+    data_transform = data_transforms(args.model)
+    dataset_sizes, dataloaders, class_names = load_datasets(args.input, data_transform, args.batchsize, args.model)
     num_cls = len(class_names.keys())
     model = set_model(num_cls, args.model)
     if args.loss == 'cross_entropy':
@@ -154,12 +153,13 @@ def main(args):
         optimizer_ft = optim.SGD(model.parameters(), lr=args.lr, momentum=0.9, weight_decay=1e-5)
         exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=5, gamma=0.1)
     elif args.optim == 'adam':
-        optimizer_ft = optim.adam.Adam(model.parameters(), lr=args.lr,weight_decay=1e-5)
+        optimizer_ft = optim.adam.Adam(model.parameters(), lr=args.lr, weight_decay=1e-5)
         exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=5, gamma=0.1)
     else:
         raise NotImplemented
 
-    train_model(model, args.epochs, dataset_sizes, dataloaders, optimizer_ft, criterion, exp_lr_scheduler, args.output)
+    train_model(model, args.epochs, dataset_sizes, dataloaders, optimizer_ft, criterion, exp_lr_scheduler, args.output,
+                args.model)
 
 
 if __name__ == "__main__":
